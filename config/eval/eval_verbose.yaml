@@ -1,0 +1,6 @@
+eval_in_training: True
+every_n_steps: 5000
+eval_start: True
+eval_end: True
+visualize_at_eval: True
+visualize_gaussians: True

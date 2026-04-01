@@ -1,0 +1,21 @@
+[submodule "fact_gs/submodules/gs_voxelizer"]
+	path = fact_gs/submodules/gs_voxelizer
+	url = https://github.com/PaPieta/gs-voxelizer
+[submodule "fact_gs/submodules/gs_ct_rasterizer"]
+	path = fact_gs/submodules/gs_ct_rasterizer
+	url = https://github.com/PaPieta/gs-ct-rasterizer
+[submodule "fact_gs/submodules/fused_3d_tv"]
+	path = fact_gs/submodules/fused_3d_tv
+	url = https://github.com/PaPieta/fused-3d-tv
+[submodule "fact_gs/submodules/fused_ssim"]
+	path = fact_gs/submodules/fused_ssim
+	url = https://github.com/rahul-goel/fused-ssim
+[submodule "fact_gs/submodules/glm"]
+	path = fact_gs/submodules/glm
+	url = https://github.com/g-truc/glm
+[submodule "fact_gs/submodules/simple_knn"]
+	path = fact_gs/submodules/simple_knn
+	url = https://github.com/camenduru/simple-knn
+[submodule "fact_gs/submodules/TIGRE"]
+	path = fact_gs/submodules/TIGRE
+	url = https://github.com/CERN/TIGRE

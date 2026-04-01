@@ -1,0 +1,9 @@
+hydra:
+  job: 
+    chdir:  False
+defaults:
+    - _self_
+    - model: model_default_volume
+    - optim: optim_prior_volume
+    - eval: eval_100
+    - profile: profile_no

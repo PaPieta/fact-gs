@@ -1,0 +1,6 @@
+eval_in_training: False
+every_n_steps: 0
+eval_start: False
+eval_end: True
+visualize_at_eval: True
+visualize_gaussians: False
