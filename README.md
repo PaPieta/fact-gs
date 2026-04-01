@@ -33,7 +33,7 @@ pip install --no-build-isolation -r submodules.txt
 
 The GLM_HOME variable is necessary to automatically link it to the voxelizer and rasterizer submodules.
 
-:exclamation: Consider [using mamba instad of conda](https://iamdamilare13.medium.com/mamba-vs-conda-know-the-differences-and-similarities-be3ae94d2542) for faster installation.
+:exclamation: Consider [using mamba instad of conda](https://iamdamilare13.medium.com/mamba-vs-conda-know-the-differences-and-similarities-be3ae94d2542) for much faster installation. When available, it should be enough to replace the env creation call with `mamba env create -f environment.yml`
 
 ## Data
 
