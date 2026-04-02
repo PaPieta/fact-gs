@@ -4,7 +4,7 @@
 
 ![cover_figure](assets/cover_figure.png)
 
-###  [Paper](TBA) | [Project Page](TBA)
+###  [Paper](TBA) | [Project Page](https://papieta.github.io/fact-gs/)
 
 </div>
 
@@ -14,11 +14,11 @@ Official repository for our paper titled FaCT-GS: Fast and Scalable CT Reconstru
 
 #### Related repositories (included in the installation):
 
-[Fast Gaussian Splatting CT Rasterizer ](https://github.com/PaPieta/gs-ct-rasterizer) | [Fast Gaussian Splatting Voxelizer](https://github.com/PaPieta/gs-voxelizer) | [Fused SSIM](https://github.com/rahul-goel/fused-ssim) (2D and 3D) | [Fused 3D TV](https://github.com/PaPieta/fused-3D-tv)
+[Fast Gaussian Splatting CT Rasterizer](https://github.com/PaPieta/gs-ct-rasterizer) | [Fast Gaussian Splatting Voxelizer](https://github.com/PaPieta/gs-voxelizer) | [Fused SSIM](https://github.com/rahul-goel/fused-ssim) (2D and 3D) | [Fused 3D TV](https://github.com/PaPieta/fused-3D-tv)
 
 ## Installation
 
-You need to have an NVIDIA GPU with CUDA installed. 
+You need to have an NVIDIA GPU with CUDA installed (tested with CUDA 12.1). 
 
 Create a dedicated Python environment and install the dependencies:
 
