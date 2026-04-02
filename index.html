@@ -66,7 +66,7 @@
               <span class="author-block">
                 <a href="https://orcid.org/0000-0002-3145-0229" target="_blank">Jens Wenzel Andreasen</a></span>,
               <span class="author-block">
-                <a href="https://orcid.org/{0000-0001-6734-5570" target="_blank">Vedrana Andersen Dahl</a></span>
+                <a href="https://orcid.org/0000-0001-6734-5570" target="_blank">Vedrana Andersen Dahl</a></span>
               
                   </div>
 
@@ -169,11 +169,11 @@
       <div class="item">
         <div class="columns is-centered has-text-centered">
         <!-- Your image here -->
-        <img src="static/images/rast_vox_merged.png" alt="Rasterization and voxelization speed" style="width: 80vw"/>
+        <img src="static/images/rast_vox_merged.png" alt="Rasterization and voxelization speed" style="width: 60vw; max-width: 1000px;"/>
       </div>
         <h2 class="subtitle has-text-centered">
-          The main impact on performance is enabled by the optimization of the rasterization and voxelization components. 
-          Borrowing from established solutions (Taiming 3DGS, StopThePop, etc.), and designing further CT-specific optimization, we manage to significantly reduce the execution time, especially for large volumes and projections.
+          The main impact on performance is enabled by the acceleration of the rasterization and voxelization components. 
+          Borrowing from established solutions (Taiming 3DGS, StopThePop, etc.), and designing further CT-specific acceleration, we manage to significantly reduce the execution time, especially for large volumes and projections.
           For example, a baseline rasterizer needs 210 ms to process a 2K image, while ours completes the same task in 9.3 ms. N_G - number of Gaussians, N_px - number of pixels.
         </h2>
      </div>
@@ -193,7 +193,7 @@
         <h2 class="title is-3">Structural analysis</h2>
         <div class="content has-text-justified">
           <p>
-            We test our method on a collection of real and synthetic reconstruction tasks from the R2-Gaussian dataset, comparing to algebraic method: SIRT and FISTA, nefr-based methods: IntraTomo and NAF, and the previous State of the Art GS-based method: R2-Gaussian.
+            We test our method on a collection of real and synthetic reconstruction tasks from the R2-Gaussian dataset, comparing to algebraic methods: SIRT and FISTA, NeRF-based methods: IntraTomo and NAF, and the previous State of the Art GS-based method: R2-Gaussian.
             We further explore the scaling capability, reporting the execution time needed to reconstruct volumes of increasing projection/volume size.
           </p>
         </div>
@@ -212,7 +212,7 @@
        <div class="item">
         <div class="columns is-centered has-text-centered">
         <!-- Your image here -->
-        <img src="static/images/main_table.png" alt="Reconstruction performance comparison" style="width: 40vw; max-width: 600px;"/>
+        <img src="static/images/main_table.png" alt="Reconstruction performance comparison" style="width: 70vw; max-width: 900px;"/>
         </div>
         <h2 class="subtitle has-text-centered">
           Quantitative results on the 512x512-projection dataset from R2-Gaussian. FaCT-GS is faster than its predecessors, already outperforming them in under 1 minute and being the only method to beat a well-established FISTA.
@@ -221,7 +221,7 @@
       <div class="item">
         <div class="columns is-centered has-text-centered">
         <!-- Your image here -->
-        <img src="static/images/scaling_merged.png" alt="Reconstruction scaling capability" style="width: 80vw; max-width: 1200px;"/>
+        <img src="static/images/scaling_merged.png" alt="Reconstruction scaling capability" style="width: 70vw; max-width: 900px;"/>
         </div>
         <h2 class="subtitle has-text-centered">
           The impact of FaCT-GS is especially significant for larger projection sizes. For 2K projections, FaCT-GS needs 1 minute to reach the SSIM of 0.9, while FISTA and R2-Gaussian need 20 minutes. 
@@ -262,7 +262,7 @@
        <div class="item">
         <div class="columns is-centered has-text-centered">
         <!-- Your image here -->
-        <img src="static/images/init_comparison_small.png" alt="Comparison of initialization methods" style="width: 40vw; max-width: 600px;"/>
+        <img src="static/images/init_comparison_small.png" alt="Comparison of initialization methods" style="width: 50vw; max-width: 800px;"/>
         </div>
         <h2 class="subtitle has-text-centered">
           An accurate prior volume can warm-start the reconstruction process from a state much closer to the optimal solution. 
@@ -272,7 +272,7 @@
       <div class="item">
         <div class="columns is-centered has-text-centered">
         <!-- Your image here -->
-        <img src="static/images/volume_fitting_merged.png" alt="Fitting Gaussian representation to volumes" style="width: 80vw; max-width: 1200px;"/>
+        <img src="static/images/volume_fitting_merged.png" alt="Fitting Gaussian representation to volumes" style="width: 70vw; max-width: 1000px;"/>
         </div>
         <h2 class="subtitle has-text-centered">
           Fitting the Gaussian representation directly to a volume yields an accurate and highly compressed representation, with performance similar to JPEG. Tested on 256x256x256 volumes from the R2-Gaussian dataset.
