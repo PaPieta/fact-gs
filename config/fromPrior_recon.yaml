@@ -1,9 +1,0 @@
-hydra:
-  job: 
-    chdir:  False
-defaults:
-    - _self_
-    - model: model_fromPrior_recon
-    - optim: optim_fromPrior_recon
-    - eval: eval_1000
-    - profile: profile_no
