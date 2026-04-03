@@ -225,7 +225,7 @@ Each shell wraps the corresponding helper in `experiments/helpers/` to collect m
 
 If this repository helped in your research, please consider citing our work:
 ```
-@misc{pieta2026factgsfastscalablect,
+@misc{pieta2026,
       title={FaCT-GS: Fast and Scalable CT Reconstruction with Gaussian Splatting}, 
       author={Pawel Tomasz Pieta and Rasmus Juul Pedersen and Sina Borgi and Jakob Sauer Jørgensen and Jens Wenzel Andreasen and Vedrana Andersen Dahl},
       year={2026},
