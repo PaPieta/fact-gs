@@ -4,7 +4,7 @@
 
 ![cover_figure](assets/cover_figure.png)
 
-###  [Paper](TBA) | [Project Page](https://papieta.github.io/fact-gs/)
+###  [Paper](https://arxiv.org/pdf/2604.01844) | [Project Page](https://papieta.github.io/fact-gs/)
 
 </div>
 
@@ -225,7 +225,15 @@ Each shell wraps the corresponding helper in `experiments/helpers/` to collect m
 
 If this repository helped in your research, please consider citing our work:
 ```
-TBA
+@misc{pieta2026factgsfastscalablect,
+      title={FaCT-GS: Fast and Scalable CT Reconstruction with Gaussian Splatting}, 
+      author={Pawel Tomasz Pieta and Rasmus Juul Pedersen and Sina Borgi and Jakob Sauer Jørgensen and Jens Wenzel Andreasen and Vedrana Andersen Dahl},
+      year={2026},
+      eprint={2604.01844},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2604.01844}, 
+}
 ```
 
 ## Acknowledgements
