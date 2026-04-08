@@ -142,7 +142,7 @@
         <h2 class="title is-3">Abstract</h2>
         <div class="content has-text-justified">
           <p>
-            Gaussian Splatting (GS) has emerged as a dominating technique for image rendering and has quickly been adapted for the X-ray Computed Tomography (CT) reconstruction task. However, despite being on par or better than many of its predecessors, the benefits of GS are typically not substantial enough to motivate a transition from well-established reconstruction algorithms. This paper addresses the most significant remaining limitations of the GS-based approach by introducing FaCT-GS, a framework for fast and flexible CT reconstruction. Enabled by an in-depth optimization of the voxelization and rasterization pipelines, our new method is significantly faster than its predecessors and scales well with projection and output volume size. Furthermore, the improved voxelization enables rapid fitting of Gaussians to pre-existing volumes, which can serve as a prior for warm-starting the reconstruction, or simply as an alternative, compressed representation. FaCT-GS is over 4$\times$ faster than the State of the Art GS CT reconstruction on standard $512^2$ projections, and over 13$\times$ faster on 2k projections.
+            Gaussian Splatting (GS) has emerged as a dominating technique for image rendering and has quickly been adapted for the X-ray Computed Tomography (CT) reconstruction task. However, despite being on par or better than many of its predecessors, the benefits of GS are typically not substantial enough to motivate a transition from well-established reconstruction algorithms. This paper addresses the most significant remaining limitations of the GS-based approach by introducing FaCT-GS, a framework for fast and flexible CT reconstruction. Enabled by an in-depth optimization of the voxelization and rasterization pipelines, our new method is significantly faster than its predecessors and scales well with projection and output volume size. Furthermore, the improved voxelization enables rapid fitting of Gaussians to pre-existing volumes, which can serve as a prior for warm-starting the reconstruction, or simply as an alternative, compressed representation. FaCT-GS is over 4x faster than the State of the Art GS CT reconstruction on standard 512x512 projections, and over 13x faster on 2k projections.
           </p>
         </div>
       </div>
@@ -174,7 +174,7 @@
         <h2 class="subtitle has-text-centered">
           The main impact on performance is enabled by the acceleration of the rasterization and voxelization components. 
           Borrowing from established solutions (Taiming 3DGS, StopThePop, etc.), and designing further CT-specific acceleration, we manage to significantly reduce the execution time, especially for large volumes and projections.
-          For example, a baseline rasterizer needs 210 ms to process a 2K image, while ours completes the same task in 9.3 ms. N_G - number of Gaussians, N_px - number of pixels.
+          For example, a baseline rasterizer needs 210 ms to process a 2k image, while ours completes the same task in 9.3 ms. N_G - number of Gaussians, N_px - number of pixels.
         </h2>
      </div>
   </div>
@@ -224,7 +224,7 @@
         <img src="static/images/scaling_merged.png" alt="Reconstruction scaling capability" style="width: 70vw; max-width: 900px;"/>
         </div>
         <h2 class="subtitle has-text-centered">
-          The impact of FaCT-GS is especially significant for larger projection sizes. For 2K projections, FaCT-GS needs 1 minute to reach the SSIM of 0.9, while FISTA and R2-Gaussian need 20 minutes. 
+          The impact of FaCT-GS is especially significant for larger projection sizes. For 2k projections, FaCT-GS needs 1 minute to reach the SSIM of 0.9, while FISTA and R2-Gaussian need 20 minutes. 
         </h2>
       </div>
   </div>
