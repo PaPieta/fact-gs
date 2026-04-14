@@ -1,0 +1,6 @@
+hydra:
+  job: 
+    chdir:  False
+defaults:
+    - _self_
+    - model: model_default_test

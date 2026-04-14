@@ -50,7 +50,7 @@ All scripts are parametrized with a [Hydra](https://hydra.cc/) config, located a
 Both reconstruction and volume fitting expect the r2_gaussian data layout (```meta_data.json```)
 
 <details>
-<summary><span style="font-weight: bold;">Parameters shared by all scripts</span></summary>
+<summary><span style="font-weight: bold;">Parameters shared by all training scripts</span></summary>
 
 (overwrite with *category.parameter=new_value*)
 
@@ -75,6 +75,8 @@ Both reconstruction and volume fitting expect the r2_gaussian data layout (```me
 * *rotation_lr_init/final/max_steps* - Learning rate schedule for spherical harmonics rotations
 * *lambda_dssim* - Weight of the DSSIM loss component (set to 0 to disable)
 * *lambda_tv* - Weight of the 3D total-variation regularizer
+* *ssim3d_early_stop / ssim3d_early_stop_threshold* - Optional early-stopping guard. When enabled, training exits as soon as the reported 3D SSIM reaches or exceeds the provided threshold. Useful for time-to-SSIM studies (defaults to disabled).
+* *training_time_limit_seconds* - Optional wall-clock limit (seconds). When >0, stops training once the accumulated training time crosses the threshold.
 * **densify_gaussians** - Enables/disables periodic Gaussian densification and pruning
 * *density_min_threshold* - Minimum density allowed during pruning; Gaussians below the threshold get removed
 * *densification_interval/densify_from_step/densify_until_step_percent* - Controls when densification starts, how often it is triggered, and up to what portion of training it remains active
@@ -87,6 +89,7 @@ Both reconstruction and volume fitting expect the r2_gaussian data layout (```me
 * *every_n_steps* - Evaluation frequency measured in optimization steps (ignored when ```eval_in_training=False```)
 * *eval_start* - If True, evaluate the initialization before any optimization step
 * *eval_end* - If True, evaluate after the final step (used for leaderboard metrics)
+* *extra_eval_iter_num* - (optional) specific iteration to force an additional evaluation and metric export; useful for catching early progress snapshots such as the 150-iteration dumps used in the paper (`eval_default_extra_150`). For reconstruction runs, iterations equal full sweeps over the training cameras, while for volume fitting `iteration == step`.
 * *visualize_at_eval* - When enabled, dumps reconstructed volumes (tiff + preview) at evaluation checkpoints
 * *visualize_gaussians* - Exports Gaussian position/footprint visualizations and error maps for debugging
 
@@ -186,6 +189,18 @@ python train_recon \
     model.prior_path=path/to/trained/point_cloud.pickle \
 ```
 
+### Testing existing models
+
+Use `test_model.py` to load a finished checkpoint and report PSNR/SSIM scores without re-running optimization. The script reuses the Hydra config system (defaults to `config/default_test.yaml`), so point it to your model/data pair just like the training scripts:
+
+```sh
+python test_model.py \
+    model.data_source_path=your/path/to/scan/or/volume \
+    model.model_path=path/to/trained/model \
+    model.target=recon  # or "vol" for volume compression checkpoints
+    model.vol_name=vol_gt # Target volume name used in volume fitting, ignore for testing recon models
+```
+
 ## Prepare your own data
 
 >Data preparation/generation is largely copied from [r2_gaussian](https://github.com/Ruyi-Zha/r2_gaussian/tree/main/r2_gaussian/).
@@ -202,15 +217,17 @@ If you want to test your own data, please first convert it to the r2_gaussian fo
 
 ## Running experiments from the paper
 
-> The experiment list below is not complete, will be finalized soon.
-
 The `experiments/` folder contains ready-made shells for each study discussed in the paper:
 
 - `main_experiment.sh` – Reconstructions for all scans in the r2_gaussian dataset (Tab. 1).
+- `time_limit_teaser_experiment.sh` – Chest/walnut/coral reconstructions capped at fixed training-time budgets (30 s / 60 s / 120 s) (Fig 1).
+- `scaling_study_coral_100it.sh` – Scaling capability - 100-iteration reconstruction time for coral scans with increasing volume size (Fig 4a).
+- `scaling_study_coral_090ssim.sh` – Scaling capability - above, but stop reconstruction once 3D SSIM reaches 0.90 (Fig 4b).
 - `init_comparison_experiment.sh` – Comparing the impact of various initialization strategies (Fig. 5)
 - `compression_experiment.sh` – Quality of volume fitting and compression (Fig. 6, Tab. 2)
 - `warm_start_experiment.sh` – Impact of warm-start on reconstruction speed and quality (Supplementary material, Tab. 3)
-- `gaussian_study_r2data_experiment.sh` and `gaussian_study_coraldata_experiment.sh` - Ablation study on the impact of initial number of gaussians on reconstruction quality (Supplementary material, Fig. 8). :exclamation: Warning - slow.
+- `gaussian_study_r2data_experiment.sh` and `gaussian_study_coraldata_experiment.sh` – Ablation study on the impact of the initial number of Gaussians on reconstruction quality (Supplementary material, Fig. 8). :exclamation: Warning - slow.
+
 
 All scripts default to `$(pwd)` as the root for data and model outputs. To run them on a different storage location, export `MAIN_ROOT=/path/to/root` before launching, e.g.
 
@@ -220,6 +237,7 @@ source experiments/main_experiment.sh
 ```
 
 Each shell wraps the corresponding helper in `experiments/helpers/` to collect metrics into CSV files right after the training finishes.
+
 
 ## Citation
 

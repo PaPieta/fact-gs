@@ -59,10 +59,18 @@ run_case() {
     done
 }
 
-for dataset_dir in "${CORAL_DATASET_ROOT}"/*; do
-    [[ -d "${dataset_dir}" ]] || continue
-    dataset_name="$(basename "${dataset_dir}")"
-    run_case "${dataset_name}" "${dataset_dir}"
+ORDERED_DATASETS=(
+    coral256_cone
+    coral384_cone
+    coral512_cone
+    coral768_cone
+    coral1k_cone
+)
+
+for dataset_name in "${ORDERED_DATASETS[@]}"; do
+    data_path="${CORAL_DATASET_ROOT}/${dataset_name}"
+    [[ -d "${data_path}" ]] || continue
+    run_case "${dataset_name}" "${data_path}"
 done
 
 echo "Collecting coral Gaussian study metrics"

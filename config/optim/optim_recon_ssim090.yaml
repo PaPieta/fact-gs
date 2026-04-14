@@ -26,6 +26,6 @@ max_screen_size: null
 max_scale: null  # percent of volume size
 max_num_gaussians: 1.1  # multiplier relative to model.num_gaussians (e.g., 1.1 = 110%)
 
-ssim3d_early_stop: false
-ssim3d_early_stop_threshold: 0.0
-training_time_limit_seconds: 0.0
+ssim3d_early_stop: true
+ssim3d_early_stop_threshold: 0.9
+training_time_limit_seconds: 0.0 # If > 0, stop training after this many seconds have elapsed

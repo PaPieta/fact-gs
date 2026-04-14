@@ -1,0 +1,6 @@
+data_source_path: "data/synthetic_dataset/cone_ntrain_50_angle_360/1_pepper_cone" # path to the data (r2 style)
+model_path: "models/recon/1_pepper_cone" # path to load the model checkpoints
+target: "recon" # "recon" for reconstruction, "vol" for volume fitting
+eval: True
+
+vol_name: "vol_gt" # name of the target volume in the data source for evaluation (e.g. "vol_gt" or "vol_prior")

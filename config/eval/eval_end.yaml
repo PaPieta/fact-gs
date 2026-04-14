@@ -4,3 +4,4 @@ eval_start: False
 eval_end: True
 visualize_at_eval: True
 visualize_gaussians: False
+extra_eval_iter_num: None

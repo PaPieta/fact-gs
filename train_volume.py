@@ -1,6 +1,7 @@
 import hydra
 import os
 import os.path as osp
+import time
 from tqdm import tqdm
 import numpy as np
 
@@ -49,6 +50,8 @@ def optimize(config, profiler=None):
     """
     model_args, optim_args, eval_args = config.model, config.optim, config.eval
     scene = SceneVol(model_args, file_name=model_args.vol_name)
+    training_time_seconds = 0.0
+    eval_and_save_time_seconds = 0.0
 
     print(f"Data source path: {model_args.data_source_path}")
     print(f"Volume name: {model_args.vol_name}")
@@ -102,14 +105,13 @@ def optimize(config, profiler=None):
                           3*tv_vol_size[0]*(tv_vol_size[1]-1)*tv_vol_size[2] + \
                           3*tv_vol_size[0]*tv_vol_size[1]*(tv_vol_size[2]-1)
 
-    step_start = torch.cuda.Event(enable_timing=True)
-    step_end = torch.cuda.Event(enable_timing=True)
     ckpt_save_path = osp.join(scene.model_path, "ckpt")
     os.makedirs(ckpt_save_path, exist_ok=True)
     viewpoint_stack = None
     progress_bar = tqdm(range(0, optim_args.steps), desc="Train", leave=False)
+    latest_eval_metrics = None
     for step in range(optim_args.steps + 1):
-        step_start.record()
+        step_time_start = time.perf_counter()
         # Update learning rate
         gaussians.update_learning_rate(step)
 
@@ -146,8 +148,6 @@ def optimize(config, profiler=None):
             loss["total"] = loss["total"] + optim_args.lambda_tv * loss_tv
         loss["total"].backward()
 
-        step_end.record()
-
         with torch.no_grad():
             # Adaptive control
             gaussians.max_radii2D[visibility_filter] = torch.max(
@@ -180,9 +180,12 @@ def optimize(config, profiler=None):
                 gaussians.optimizer.step()
                 gaussians.optimizer.zero_grad(set_to_none=True)
 
+            training_time_seconds += time.perf_counter() - step_time_start
+            step_non_training_time_start = time.perf_counter()
+
             # Save gaussians
             if step == optim_args.steps:
-                tqdm.write(f"[STEP {step}] Saving Gaussians")
+                tqdm.write(f"[STEP/ITER {step}] Saving Gaussians")
                 scene.save(step, voxelizefunc, vol_format="tiff")
 
             # Progress bar
@@ -203,10 +206,11 @@ def optimize(config, profiler=None):
                 metrics["loss_" + l] = loss[l].item()
             for param_group in gaussians.optimizer.param_groups:
                 metrics[f"lr_{param_group['name']}"] = param_group["lr"]
-            log_training_status(
+            eval_metrics = log_training_status(
                 step,
                 metrics,
-                step_start.elapsed_time(step_end),
+                training_time_seconds,
+                eval_and_save_time_seconds,
                 optim_args.steps,
                 eval_args,
                 scene,
@@ -214,26 +218,77 @@ def optimize(config, profiler=None):
                 model_args.init_mode,
             )
 
+            if eval_metrics is not None:
+                latest_eval_metrics = eval_metrics
+
+            eval_and_save_time_seconds += time.perf_counter() - step_non_training_time_start
+
+            # Early stopping based on 3D SSIM
+            if optim_args.ssim3d_early_stop and eval_metrics is not None:
+                threshold = getattr(optim_args, "ssim3d_early_stop_threshold", 0.0)
+                ssim_value = eval_metrics.get("ssim_3d")
+                if ssim_value is not None and threshold > 0 and ssim_value >= threshold:
+                    iteration_str = f"{eval_metrics['iteration']:.2f}"
+                    tqdm.write(
+                        f"[STEP {step}] Early stopping triggered at iteration {iteration_str} "
+                        f"(SSIM={eval_metrics['ssim_3d']:.4f} >= {threshold:.3f})"
+                    )
+                    if step != optim_args.steps:
+                        scene.save(step, voxelizefunc, vol_format="tiff")
+                    save_final_metrics(scene.model_path, eval_metrics, training_time_seconds)
+                    break
+
+            # Early stopping based on accumulated training time
+            time_limit_seconds = getattr(optim_args, "training_time_limit_seconds", 0.0)
+            if time_limit_seconds > 0 and training_time_seconds >= time_limit_seconds:
+                tqdm.write(
+                    f"[STEP {step}] Stopping because training time "
+                    f"{training_time_seconds:.2f}s exceeded limit {time_limit_seconds:.2f}s"
+                )
+                if step != optim_args.steps:
+                    scene.save(step, voxelizefunc, vol_format="tiff")
+                if latest_eval_metrics is not None:
+                    save_final_metrics(scene.model_path, latest_eval_metrics, training_time_seconds)
+                break
+
             if profiler is not None:
                 profiler.step()
+    progress_bar.close()
     torch.cuda.empty_cache()
+
+def save_final_metrics(model_path, metrics, training_time_seconds):
+    """Save final evaluation metrics to a YAML file for easy retrieval."""
+    if not metrics:
+        return
+    eval_save_path = osp.dirname(model_path)
+    yaml_name = f"{osp.basename(model_path)}_metrics_final.yml"
+    payload = {
+        "psnr_3d": metrics.get("psnr_3d"),
+        "ssim_3d": metrics.get("ssim_3d"),
+        "time_training_seconds": training_time_seconds,
+    }
+    with open(osp.join(eval_save_path, yaml_name), "w") as f:
+        yaml.dump(payload, f, default_flow_style=False, sort_keys=False)
 
 def log_training_status(
     step,
     metrics_train,
-    elapsed,
+    training_time_seconds,
+    eval_and_save_time_seconds,
     max_steps,
     eval_args,
     scene: SceneVol,
     voxelizeFunc,
     init_mode,
+    force_eval=False,
 ):
     """Evaluate/visualize volume training progress at the requested cadence.
 
     Args:
         step: Current global training step.
         metrics_train: Dictionary with scalar loss/learning-rate values.
-        elapsed: CUDA event duration reported in milliseconds.
+        training_time_seconds: Total time spent on training.
+        eval_and_save_time_seconds: Total time spent on evaluation and saving.
         max_steps: Maximum number of training steps.
         eval_args: Evaluation sub-config that controls cadence and visualization.
         scene: Scene wrapper that exposes volumes and Gaussian parameters.
@@ -241,7 +296,18 @@ def log_training_status(
         init_mode: String describing how Gaussians were initialized (for logging).
     """
 
-    if (eval_args.eval_in_training and step % eval_args.every_n_steps == 0 and step != 0) or (eval_args.eval_end and step == max_steps) or (eval_args.eval_start and step == 0):
+    iter_num = step  # For volume optimization, each step corresponds to one iteration.
+
+    eval_metrics = None
+
+    should_eval = force_eval or (
+        (eval_args.eval_in_training and step % eval_args.every_n_steps == 0 and step != 0)
+        or (eval_args.eval_end and step == max_steps)
+        or (eval_args.eval_start and step == 0)
+        or (eval_args.extra_eval_iter_num is not None and iter_num == eval_args.extra_eval_iter_num)
+    )
+
+    if should_eval:
         # Evaluate 2D rendering performance
         if step == 0:
             eval_save_path = osp.join(scene.model_path, "eval", f"init_{init_mode}")
@@ -249,6 +315,13 @@ def log_training_status(
             eval_save_path = osp.join(scene.model_path, "eval", f"step_{step:06d}")
         os.makedirs(eval_save_path, exist_ok=True)
         torch.cuda.empty_cache()
+
+        time_dict = {
+            "training_time_seconds": float(training_time_seconds),
+            "eval_and_save_time_seconds": float(eval_and_save_time_seconds),
+        }
+        with open(osp.join(eval_save_path, "time.yml"), "w") as f:
+            yaml.dump(time_dict, f, default_flow_style=False, sort_keys=False)
         
         # Evaluate 3D reconstruction performance
         voxelize_pkg = voxelizeFunc(scene.gaussians)
@@ -256,14 +329,20 @@ def log_training_status(
         vol_gt = scene.vol_gt
         psnr_3d, _ = metric_vol(vol_gt, vol_pred, "psnr")
         ssim_3d, _ = metric_vol(vol_gt, vol_pred, "ssim")
+        eval_metrics = {
+            "psnr_3d": float(psnr_3d),
+            "ssim_3d": float(ssim_3d.item()),
+            "step": float(step),
+            "iteration": float(iter_num),
+        }
         eval_dict = {
-            "psnr_3d": psnr_3d,
-            "ssim_3d": ssim_3d.item(),
+            "psnr_3d": eval_metrics["psnr_3d"],
+            "ssim_3d": eval_metrics["ssim_3d"],
         }
         with open(osp.join(eval_save_path, "eval3d.yml"), "w") as f:
             yaml.dump(eval_dict, f, default_flow_style=False, sort_keys=False)
         tqdm.write(
-            f"[STEP {step}] Evaluating: psnr3d {psnr_3d:.3f}, ssim3d {ssim_3d:.3f}"
+            f"[STEP/ITER {step}] Training Time: {training_time_seconds:.2f}s. Evaluating: psnr3d {psnr_3d:.3f}, ssim3d {ssim_3d:.3f}"
         )
 
         if eval_args.visualize_at_eval:
@@ -297,17 +376,22 @@ def log_training_status(
                                         scene.scanner_cfg["offOrigin"],)
             save_error_maps(error_maps_path, vol_pred, vol_gt)
 
-        if step == max_steps:
-            # Save PSNR and SSIM metrics to a yaml file
+        if eval_args.extra_eval_iter_num is not None and iter_num == eval_args.extra_eval_iter_num:
             eval_dict = {
-                "psnr_3d": psnr_3d,
-                "ssim_3d": ssim_3d.item(),
+                "psnr_3d": eval_metrics["psnr_3d"],
+                "ssim_3d": eval_metrics["ssim_3d"],
+                "training_time_seconds": training_time_seconds,
+                "eval_and_save_time_seconds": eval_and_save_time_seconds,
             }
-            # Take a step back from model path
             eval_save_path = osp.dirname(scene.model_path)
-            yaml_name = f"{osp.basename(scene.model_path)}_metrics_final.yml"
+            yaml_name = f"{osp.basename(scene.model_path)}_metrics_{int(iter_num)}.yml"
             with open(osp.join(eval_save_path, yaml_name), "w") as f:
                 yaml.dump(eval_dict, f, default_flow_style=False, sort_keys=False)
+
+        if step == max_steps:
+            save_final_metrics(scene.model_path, eval_metrics, training_time_seconds)
+
+    return eval_metrics
 
 if __name__ == "__main__":
     train_volume()

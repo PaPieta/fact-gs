@@ -25,6 +25,10 @@ max_screen_size: null
 max_scale: null  # percent of volume size
 max_num_gaussians: 1.1  # multiplier relative to model.num_gaussians
 
+ssim3d_early_stop: false
+ssim3d_early_stop_threshold: 0.0
+training_time_limit_seconds: 0.0
+
 # Bit precision
 quantize:              True # Enable bit precision control of Gaussian parameters
 pos_bits:              16 # Bit precision of individual coordinate dimension

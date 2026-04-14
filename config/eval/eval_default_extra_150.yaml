@@ -1,7 +1,7 @@
 eval_in_training: True
-every_n_steps: 100
+every_n_steps: 5000
 eval_start: True
 eval_end: True
-visualize_at_eval: True 
+visualize_at_eval: True
 visualize_gaussians: False
-extra_eval_iter_num: None
+extra_eval_iter_num: 150
