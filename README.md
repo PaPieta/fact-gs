@@ -126,7 +126,7 @@ For major adjustments, it is recommended to create your own config presets.
 The most default reconstruction can be ran with:
 
 ```sh
-python train_recon \
+python train_recon.py \
     model.data_source_path=your/path/to/scan/data \
     model.model_path=path/where/trained/model/should/be/saved 
 ```
@@ -153,14 +153,14 @@ Volume fitting can be split into to categeories:
 1. Fitting for the purpose of CT reconstruction volumetric prior warm-start. Target volume is assumed to be named ```vol_prior.[npy/tiff]``` (controlled with ```model.vol_name```):
 
     ```sh
-    python train_volume \
+    python train_volume.py \
         model.data_source_path=your/path/to/volume/data \
         model.model_path=path/where/trained/model/should/be/saved 
     ```
 
 2. Fitting for volume compression, or simply for creating a gaussian-based representation. Target volume is assumed to be named ```vol_gt.[npy/tiff]```. Here we train for longer to get a closer match:
     ```sh
-    python train_volume \
+    python train_volume.py \
         --config-name compress_volume \
         model.data_source_path=your/path/to/volume/data \
         model.model_path=path/where/trained/model/should/be/saved 
@@ -182,7 +182,7 @@ Volume fitting can be split into to categeories:
 
 First fit the Gaussian representation to a volume (see above). Find path to the trained point cloud (ends with ```point_cloud.pickle```). Then call:
 ```
-python train_recon \
+python train_recon.py \
     --config-name fromPrior_recon \
     model.data_source_path=your/path/to/scan/data \
     model.model_path=path/where/trained/model/should/be/saved \
