@@ -4,7 +4,7 @@
 
 ![cover_figure](assets/cover_figure.png)
 
-###  [Paper](https://arxiv.org/pdf/2604.01844) | [Project Page](https://papieta.github.io/fact-gs/)
+###  [Paper](https://arxiv.org/pdf/2604.01844) | [Project Page](https://papieta.github.io/fact-gs/) | [Data](https://doi.org/10.11583/DTU.32054451)
 
 </div>
 
@@ -35,13 +35,20 @@ The GLM_HOME variable is necessary to automatically link it to the voxelizer and
 
 :exclamation: Consider [using mamba instad of conda](https://iamdamilare13.medium.com/mamba-vs-conda-know-the-differences-and-similarities-be3ae94d2542) for much faster installation. When available, it should be enough to replace the env creation call with `mamba env create -f environment.yml`
 
-## Data
+## Data -> [get it here](https://doi.org/10.11583/DTU.32054451)
 
->This section is a skeleton, will be expanded soon.
+The data used in this project of a collection of volumes and projections generated from various publicly available datsets. A major fraction is a copy from the [r2_gaussian](https://github.com/Ruyi-Zha/r2_gaussian/tree/main/r2_gaussian/) project. Check the [dataset description](https://doi.org/10.11583/DTU.32054451) for information on sources and licensing.
 
-The main dataset is sourced from the [r2_gaussian](https://github.com/Ruyi-Zha/r2_gaussian/tree/main/r2_gaussian/) project. Check download instructions [here](https://github.com/Ruyi-Zha/r2_gaussian/tree/main?tab=readme-ov-file#2-dataset).
+<details>
+<summary><span style="font-weight: bold;">Details on the contents of each data folder</span></summary>
 
-The remaining data can be downloaded from: TBA
+1. ```real_dataset``` and ```synthetic_dataset``` are direct copies from the [r2_gaussian](https://github.com/Ruyi-Zha/r2_gaussian/tree/main/r2_gaussian/) project, used in the main performance analysis. Details on the dataset preparation can be found [here](fact_gs/r2_gaussian/data_generator/synthetic_dataset/README.md) for the synthetic dataset, and [here](fact_gs/r2_gaussian/data_generator/real_dataset/README.md) for the real one.
+2. ```coral_dataset``` contains multiple resolutions of the same coral scan, used in te scaling study.
+3. ```init_dataset``` contains scan pairs used in the warmstart vs coldstart initialization study.
+4. ```warmstart_dataset``` contains lung CT scan pairs used in the warmstart impact study in supplementary material.
+5. ```teaser_figure``` holds scans used in generating the main teaser figure of the paper.
+
+</details>
 
 ## Running the code
 
