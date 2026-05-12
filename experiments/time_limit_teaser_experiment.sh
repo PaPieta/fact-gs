@@ -44,7 +44,6 @@ run_case() {
         model.model_path="${model_path}" \
         model.num_gaussians="${gaussian_count}" \
         optim.steps="20000" \
-        optim.max_num_gaussians="${gaussian_count}" \
         optim.training_time_limit_seconds="${time_limit}"
 }
 

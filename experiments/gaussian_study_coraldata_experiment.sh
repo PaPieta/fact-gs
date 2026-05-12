@@ -54,8 +54,7 @@ run_case() {
             model.data_source_path="${data_path}" \
             model.model_path="${model_path}" \
             optim.steps="${steps}" \
-            model.num_gaussians="${gaussian_count}" \
-            optim.max_num_gaussians="${gaussian_count}"
+            model.num_gaussians="${gaussian_count}"
     done
 }
 

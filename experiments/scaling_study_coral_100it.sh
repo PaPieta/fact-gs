@@ -37,8 +37,7 @@ run_case() {
         model.data_source_path="${data_path}" \
         model.model_path="${model_path}" \
         optim.steps="${STEPS_PER_RUN}" \
-        model.num_gaussians="${gaussian_count}" \
-        optim.max_num_gaussians="${gaussian_count}"
+        model.num_gaussians="${gaussian_count}" 
 }
 
 ORDERED_DATASETS=(

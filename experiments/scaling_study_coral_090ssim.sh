@@ -43,8 +43,7 @@ run_case() {
         optim=optim_recon_ssim090 \
         model.data_source_path="${data_path}" \
         model.model_path="${model_path}" \
-        model.num_gaussians="${gaussian_count}" \
-        optim.max_num_gaussians="${gaussian_count}"
+        model.num_gaussians="${gaussian_count}"
 }
 
 for dataset_name in "${ORDERED_DATASETS[@]}"; do
